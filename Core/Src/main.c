@@ -22,6 +22,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "string.h"
+#include "FlexiKeyboard.h"
+#include <stdlib.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +62,11 @@ void maybeBlink(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int __io_putchar(int ch)
+{
+    HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+    return ch;
+}
 /* USER CODE END 0 */
 
 /**
@@ -94,6 +101,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart2, &rxData, 1);
+  setbuf(stdout, NULL);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -101,6 +109,13 @@ int main(void)
   while (1)
   {
     maybeBlink();
+    char x = ReadFlexiKeyboard();
+    //printf(x);
+    //printf("\r\n");
+    if (x != KEY_NULL)
+    {
+      HAL_UART_Transmit(&huart2, (uint8_t *)&x, 1, HAL_MAX_DELAY);
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

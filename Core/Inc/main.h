@@ -36,7 +36,34 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+typedef enum { // A bit atypical, but I want to be able to read data from PC connected through UART for better UX
+  KEY_0 = '0',
+  KEY_1 = '1',
+  KEY_2 = '2',
+  KEY_3 = '3',
+  KEY_4 = '4',
+  KEY_5 = '5',
+  KEY_6 = '6',
+  KEY_7 = '7',
+  KEY_8 = '8',
+  KEY_9 = '9',
+  KEY_Enter = 'e',
+  KEY_Clear = 'c',
+  KEY_BkSp = 'b',
+  KEY_Start = 'S',
+  KEY_Stop = 's',
+  KEY_ESC = '`',
+  KEY_F1 = '!',
+  KEY_F2 = '@',
+  KEY_F3 = '#',
+  KEY_F4 = '$',
+  KEY_F5 = '%',
+  KEY_Dot = '.',
+  KEY_Lock = 'l',
+  KEY_OFF = 'f',
+  KEY_ON = 'n',
+  KEY_NULL = 'N' // HACK - no key pressed
+} KeyboardButton;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
