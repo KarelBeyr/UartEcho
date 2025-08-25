@@ -110,8 +110,6 @@ int main(void)
   {
     maybeBlink();
     char x = ReadFlexiKeyboard();
-    //printf(x);
-    //printf("\r\n");
     if (x != KEY_NULL)
     {
       HAL_UART_Transmit(&huart2, (uint8_t *)&x, 1, HAL_MAX_DELAY);
@@ -273,15 +271,26 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void maybeBlink(void)
 {
+  static uint32_t lastTick = 0;
+  static uint8_t ledOn = 0;
+
   if (blinks > 0)
   {
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin); // toggle LED
-    HAL_Delay(300);                             // blink delay
+    uint32_t now = HAL_GetTick();
 
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    HAL_Delay(300);
+    if ((now - lastTick) >= 300)   // 300 ms elapsed
+    {
+      HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+      lastTick = now;
+      ledOn = !ledOn;
 
-    blinks--;
+      if (ledOn == 0)  // LED just turned off -> completed one blink cycle
+      {
+        blinks--;
+      }
+    }
+  } else {
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
   }
 }
 
@@ -289,7 +298,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART2)
   {
-    if (rxData == '\n' || rxData == '\r')   // End of line
+    if (rxData == 's')   // Stop command
+    {
+      blinks = 0;
+
+      char msg[] = "Stopped blinking\r\n";
+      HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
+      rxIndex = 0;   // reset buffer (optional, in case something was half-typed)
+    }
+    else if (rxData == '\n' || rxData == '\r')   // End of line
     {
       // Add terminator
       rxBuffer[rxIndex] = 0;
